@@ -76,6 +76,9 @@ app.use('/', index);
 const home = require('./routes/home');
 app.use('/', home);
 
+const profile = require('./routes/profile');
+app.use('/profile', profile);
+
 
 
 
