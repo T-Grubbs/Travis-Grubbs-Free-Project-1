@@ -4,15 +4,13 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const passport = require('passport');
 
-
 //------- SIGNUP METHOD-------------------//
 
-router.post('/signup', (req, res, next)=>{
+router.post('/signup', (req, res, next) => {
 	const username = req.body.username;
-  const password = req.body.password;
-  const momOrDad = req.body.momOrDad;
-  const children = req.body.children;
-
+	const password = req.body.password;
+	const momOrDad = req.body.momOrDad;
+	const children = req.body.children;
 
 	User.findOne({ username }, (err, foundUser) => {
 		if (err) {
@@ -23,34 +21,31 @@ router.post('/signup', (req, res, next)=>{
 		if (foundUser) {
 			res.json({ message: 'Username taken. Choose another one.' });
 			return;
-    }
-    
-    const salt = bcrypt.genSaltSync(10);
+		}
+
+		const salt = bcrypt.genSaltSync(10);
 		const hashPass = bcrypt.hashSync(password, salt);
 
-
-    const theNewUser = new User({
+		const theNewUser = new User({
 			username: username,
 			password: hashPass,
-      momOrDad: momOrDad,
-      children: children,
-      
+			momOrDad: momOrDad,
+			children: children
 		});
 
-    theNewUser.save((err, newuser) => {
+		theNewUser.save((err, newuser) => {
 			if (err) {
 				res.json({ message: 'Saving user to database went wrong.' });
 				return;
 			}
 
-			console.log('this is the new user >===>', newuser)
-	
+			console.log('this is the new user >===>', newuser);
+
 			parent.create({
-				user:newuser._id
-			})
+				user: newuser._id
+			});
 
 			req.login(theNewUser, (err) => {
-
 				if (err) {
 					res.json({ message: 'Login after signup went bad.' });
 					return;
@@ -60,8 +55,6 @@ router.post('/signup', (req, res, next)=>{
 			});
 		});
 	});
-
-
 });
 
 //---------------LOGIN METHOD-------------
@@ -78,7 +71,6 @@ router.post('/login', (req, res, next) => {
 			return;
 		}
 
-	
 		req.login(theUser, (err) => {
 			if (err) {
 				res.json({ message: 'Session save went bad.' });
@@ -86,18 +78,12 @@ router.post('/login', (req, res, next) => {
 			}
 
 			res.json(theUser);
-			console.log(theUser)
+			console.log(theUser);
 		});
 	})(req, res, next);
 });
 
-
-
-
-
-
 //-------------LOGOUT METHOD----------------
-
 
 router.post('/logout', (req, res, next) => {
 	req.logout();
@@ -111,8 +97,5 @@ router.get('/loggedin', (req, res, next) => {
 	}
 	res.status(500).json({ message: 'Unauthorized' });
 });
-
-
-
 
 module.exports = router;
